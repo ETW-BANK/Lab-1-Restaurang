@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Access.Data;
+using Restaurant.Data.Access.Repository;
 using Restaurant.Data.Access.Repository.IRepository;
 
 namespace Restaurant

@@ -16,6 +16,9 @@ namespace Restaurant.Models
 
         public DateTime BookingDate { get; set; }
 
+       
+        public int NumberOfGuests { get; set; } 
+
         public int CustomerId { get; set; }
 
         [ForeignKey("CustomerId")]

@@ -11,6 +11,8 @@ namespace Restaurant.Data.Access.Repository.IRepository
         ICustomerRepository Customer { get; }
         ITableRepository Table { get; }
 
+        IMenuRepository Menu { get; }
+
         Task SaveAsync();
     }
 }

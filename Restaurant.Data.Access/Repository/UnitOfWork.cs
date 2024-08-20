@@ -1,11 +1,12 @@
 ﻿using Restaurant.Data.Access.Data;
+using Restaurant.Data.Access.Repository.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Restaurant.Data.Access.Repository.IRepository
+namespace Restaurant.Data.Access.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -14,22 +15,24 @@ namespace Restaurant.Data.Access.Repository.IRepository
         public ICustomerRepository Customer { get; private set; }
 
         public ITableRepository Table { get; private set; }
+        public IMenuRepository Menu { get; private set; }
 
         public UnitOfWork(RestaurantDbContext db)
         {
 
             _db = db;
 
-           Customer=new CustomerRepository(_db);
-            Table=new TableRepository(_db); 
-            
+            Customer = new CustomerRepository(_db);
+            Table = new TableRepository(_db);
+            Menu=new MenuRepository(_db);
+
         }
 
-      
+
 
         public async Task SaveAsync()
         {
-           await _db.SaveChangesAsync();    
+            await _db.SaveChangesAsync();
         }
     }
 }
