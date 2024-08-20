@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Restaurant.Data.Access.Repository.IRepository;
 using Restaurant.Models;
 
 namespace Restaurant.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class TableController : Controller
+    [ApiController]
+    public class TableController : ControllerBase
     {
-       private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public TableController(IUnitOfWork unitOfWork)
         {
@@ -21,7 +22,7 @@ namespace Restaurant.Controllers
         {
             IEnumerable<Tables> ListOfTables = await _unitOfWork.Table.GetAllAsync();
 
-            return Json(ListOfTables);
+            return Ok(ListOfTables);
         }
 
         [HttpGet]
@@ -30,7 +31,7 @@ namespace Restaurant.Controllers
         {
 
             Tables table = await _unitOfWork.Table.GetSingleAsync(u => u.Id == id);
-            return Json(table);
+            return Ok(table);
         }
 
         [HttpPost]
@@ -68,9 +69,9 @@ namespace Restaurant.Controllers
                 return NotFound();
             }
 
-         ExistingTable.TableNumber = updatedTable.TableNumber;
-         ExistingTable.NumberOfSeats = updatedTable.NumberOfSeats;
-         ExistingTable.IsBooked = updatedTable.IsBooked;    
+            ExistingTable.TableNumber = updatedTable.TableNumber;
+            ExistingTable.NumberOfSeats = updatedTable.NumberOfSeats;
+            ExistingTable.IsBooked = updatedTable.IsBooked;
 
 
             _unitOfWork.Table.Update(ExistingTable);
