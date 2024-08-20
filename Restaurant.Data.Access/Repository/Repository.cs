@@ -13,13 +13,13 @@ namespace Restaurant.Data.Access.Repository
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly RestaurantDbContext _db;
-
         internal DbSet<T> Set;
 
         public Repository(RestaurantDbContext db)
         {
             _db = db;
             this.Set = _db.Set<T>();
+         
         }
 
         public async Task AddAsync(T entity)
@@ -27,37 +27,59 @@ namespace Restaurant.Data.Access.Repository
             await Set.AddAsync(entity);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, bool? AsNoTracking = false)
         {
-            IQueryable<T> query;
-            query = Set;
+            IQueryable<T> query = Set;
 
-            return await query.ToListAsync(); 
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.ToListAsync();
         }
 
 
-        public async Task <T> GetSingleAsync(Expression<Func<T, bool>> filter)
+
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool asNoTracking = false)
         {
+            IQueryable<T> query = Set;
 
-            IQueryable<T> query;
+         
+            query = query.Where(filter);
 
-            query = Set.Where(filter);
+           
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
 
+          
+            if (asNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+          
             return await query.FirstOrDefaultAsync();
-
         }
-
-      
 
 
         public void Remove(T entity)
         {
-           Set.Remove(entity);  
+            Set.Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<T> entities)
         {
-          Set.RemoveRange(entities);
+            Set.RemoveRange(entities);
         }
     }
 }
+

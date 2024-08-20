@@ -16,9 +16,9 @@ namespace Restaurant.Data.Access.Repository.IRepository
 
         void RemoveRange(IEnumerable<T> entities);  
 
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> filter);  
+        Task<T> GetSingleAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool AsNoTracking=false);  
 
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, bool? AsNoTracking = false);
 
 
 

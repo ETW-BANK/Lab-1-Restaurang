@@ -17,6 +17,8 @@ namespace Restaurant.Data.Access.Repository
         public ITableRepository Table { get; private set; }
         public IMenuRepository Menu { get; private set; }
 
+        public IBookingRepository Booking { get; private set; }
+
         public UnitOfWork(RestaurantDbContext db)
         {
 
@@ -25,6 +27,7 @@ namespace Restaurant.Data.Access.Repository
             Customer = new CustomerRepository(_db);
             Table = new TableRepository(_db);
             Menu=new MenuRepository(_db);
+            Booking=new BookingRepository(_db); 
 
         }
 

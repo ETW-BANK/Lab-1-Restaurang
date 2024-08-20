@@ -13,6 +13,8 @@ namespace Restaurant.Data.Access.Repository.IRepository
 
         IMenuRepository Menu { get; }
 
+        IBookingRepository Booking { get; }
+
         Task SaveAsync();
     }
 }
