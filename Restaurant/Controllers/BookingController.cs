@@ -15,53 +15,14 @@ namespace Restaurant.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+       
 
-        [HttpPost]
-        [Route("CreateBooking")]
-        public async Task<IActionResult> CreateBooking([FromBody] Booking newBooking)
-        {
-            if (newBooking == null)
-            {
-                return BadRequest("Invalid booking request.");
-            }
-
-            var menu = await _unitOfWork.Menu.GetSingleAsync(m => m.Id == newBooking.MenuId && m.IsAvailable, AsNoTracking: true);
-            if (menu == null)
-            {
-                return BadRequest("The selected menu is not available.");
-            }
-
-           
-            var table = await _unitOfWork.Table.GetSingleAsync(t => t.Id == newBooking.TableId && !t.IsBooked && t.NumberOfSeats >= newBooking.NumberOfGuests, AsNoTracking: true);
-            if (table == null)
-            {
-                return BadRequest("No available table meets the requirements.");
-            }
-
-            
-            var existingBooking = await _unitOfWork.Booking.GetSingleAsync(b => b.TableId == newBooking.TableId && b.BookingDate == newBooking.BookingDate, AsNoTracking: true);
-            if (existingBooking != null)
-            {
-                return BadRequest("The selected table is already booked at the requested time.");
-            }
-
-            await _unitOfWork.Booking.AddAsync(newBooking);
-
-           
-            table.IsBooked = true;
-            _unitOfWork.Table.Update(table);
-
-           
-            await _unitOfWork.SaveAsync();
-
-            return Ok("Booking successfully created.");
-        }
 
         [HttpGet]
         [Route("GetAllBookings")]
         public async Task<IActionResult> GetAllBookings()
         {
-            var bookings = await _unitOfWork.Booking.GetAllAsync(includeProperties: "customer,table,menu");
+            var bookings = await _unitOfWork.Booking.GetAllAsync(includeProperties: "customer,table");
             return Ok(bookings);
         }
 
@@ -69,7 +30,7 @@ namespace Restaurant.Controllers
         [Route("GetBooking/{id}")]
         public async Task<IActionResult> GetBooking(int id)
         {
-            var booking = await _unitOfWork.Booking.GetSingleAsync(b => b.Id == id, includeProperties: "customer,table,menu");
+            var booking = await _unitOfWork.Booking.GetSingleAsync(b => b.Id == id, includeProperties: "customer,table");
             if (booking == null)
             {
                 return NotFound("Booking not found.");
@@ -77,48 +38,48 @@ namespace Restaurant.Controllers
             return Ok(booking);
         }
 
-        [HttpPut]
-        [Route("UpdateBooking/{id}")]
-        public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking updatedBooking)
-        {
-            var existingBooking = await _unitOfWork.Booking.GetSingleAsync(b => b.Id == id);
-            if (existingBooking == null)
-            {
-                return NotFound("Booking not found.");
-            }
+        //[HttpPut]
+        //[Route("UpdateBooking/{id}")]
+        //public async Task<IActionResult> UpdateBooking(int id, [FromBody] Booking updatedBooking)
+        //{
+        //    var existingBooking = await _unitOfWork.Booking.GetSingleAsync(b => b.Id == id);
+        //    if (existingBooking == null)
+        //    {
+        //        return NotFound("Booking not found.");
+        //    }
 
-            if (existingBooking.TableId != updatedBooking.TableId)
-            {
-                var oldTable = await _unitOfWork.Table.GetSingleAsync(t => t.Id == existingBooking.TableId);
-                if (oldTable != null)
-                {
-                    oldTable.IsBooked = false;
-                    _unitOfWork.Table.Update(oldTable);
-                }
+        //    if (existingBooking.TableId != updatedBooking.TableId)
+        //    {
+        //        var oldTable = await _unitOfWork.Table.GetSingleAsync(t => t.Id == existingBooking.TableId);
+        //        if (oldTable != null)
+        //        {
+        //            oldTable.IsBooked = false;
+        //            _unitOfWork.Table.Update(oldTable);
+        //        }
 
-                var newTable = await _unitOfWork.Table.GetSingleAsync(t => t.Id == updatedBooking.TableId && !t.IsBooked && t.NumberOfSeats >= updatedBooking.NumberOfGuests);
-                if (newTable == null)
-                {
-                    return BadRequest("The new table is not available or cannot accommodate the number of guests.");
-                }
+        //        var newTable = await _unitOfWork.Table.GetSingleAsync(t => t.Id == updatedBooking.TableId && !t.IsBooked && t.NumberOfSeats >= updatedBooking.NumberOfGuests);
+        //        if (newTable == null)
+        //        {
+        //            return BadRequest("The new table is not available or cannot accommodate the number of guests.");
+        //        }
 
-                newTable.IsBooked = true;
-                _unitOfWork.Table.Update(newTable);
+        //        newTable.IsBooked = true;
+        //        _unitOfWork.Table.Update(newTable);
 
-                existingBooking.TableId = updatedBooking.TableId;
-            }
+        //        existingBooking.TableId = updatedBooking.TableId;
+        //    }
 
           
-            existingBooking.BookingDate = updatedBooking.BookingDate;
-            existingBooking.NumberOfGuests = updatedBooking.NumberOfGuests;
-            existingBooking.CustomerId = updatedBooking.CustomerId;
-            existingBooking.MenuId = updatedBooking.MenuId;
+        //    existingBooking.BookingDate = updatedBooking.BookingDate;
+        //    existingBooking.NumberOfGuests = updatedBooking.NumberOfGuests;
+        //    existingBooking.CustomerId = updatedBooking.CustomerId;
+         
 
-            _unitOfWork.Booking.Update(existingBooking);
-            await _unitOfWork.SaveAsync();
+        //    _unitOfWork.Booking.Update(existingBooking);
+        //    await _unitOfWork.SaveAsync();
 
-            return Ok("Booking successfully updated.");
-        }
+        //    return Ok("Booking successfully updated.");
+        //}
 
         [HttpDelete]
         [Route("DeleteBooking/{id}")]

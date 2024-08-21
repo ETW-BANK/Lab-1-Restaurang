@@ -27,7 +27,7 @@ namespace Restaurant.Data.Access.Repository
             await Set.AddAsync(entity);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null, bool? AsNoTracking = false)
+        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
         {
             IQueryable<T> query = Set;
 
@@ -44,7 +44,7 @@ namespace Restaurant.Data.Access.Repository
 
 
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool asNoTracking = false)
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = Set;
 
@@ -61,10 +61,7 @@ namespace Restaurant.Data.Access.Repository
             }
 
           
-            if (asNoTracking)
-            {
-                query = query.AsNoTracking();
-            }
+      
 
           
             return await query.FirstOrDefaultAsync();

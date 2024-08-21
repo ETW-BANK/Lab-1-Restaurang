@@ -29,13 +29,6 @@ namespace Restaurant.Models
         [ForeignKey("TableId")]
         public Tables table { get; set; }  
 
-        public int MenuId { get; set; }
-
-        [ForeignKey("MenuId")]
-        public Menu menu { get; set; }
-
-
-
-
+     
     }
 }
